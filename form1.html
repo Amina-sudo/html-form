@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Application Form</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: url("bg.jpg");
+            background-color: #f4f4f4;
+            background-position: center;
+            background-size: cover;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .form-container {
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            max-width: 500px;
+            width: 100%;
+        }
+
+        h2 {
+            text-align: center;
+        }
+
+        .form-step {
+            display: none;
+        }
+
+        .form-step.active {
+            display: block;
+        }
+        h3{
+            text-align: center;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 10px;
+            margin: 8px 0;
+            border-radius: 4px;
+            border: 1px solid #ccc;
+            box-sizing: border-box;
+        }
+
+        button {
+            padding: 10px 15px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        button:disabled {
+            background-color: #ccc;
+        }
+
+        .buttons {
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .progress-bar {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+
+        .step{
+            width: 33%;
+            height: 5px;
+            background-color: #e0e0e0;
+        }
+
+        .step.active {
+            background-color: #28a745;
+        }
+        
+        @media (max-width: 600px) {
+            .form-container {
+                padding: 15px;
+            }
+        }
+
+        .message {
+            text-align: center;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+<div class="form-container">
+    <h2 id="formHeading">Application Form</h2>
+
+    
+    <div class="progress-bar">
+        <span class="step step-1 active"></span>
+        <span class="step step-2"></span>
+        <span class="step step-3"></span>
+    </div>
+
+    <form id="multiStepForm">
+        <!-- Step 1: Basic Info -->
+        
+        <div class="form-step step-1 active">
+            <h3>Personal Info</h3>
+            
+            <label for="firstName">First Name</label>
+            <input type="text" id="firstName" required>
+
+            <label for="lastName">Last Name</label>
+            <input type="text" id="lastName" required>
+
+            <label for="email">Email</label>
+            <input type="email" id="email" required>
+
+            <label for="phone">Phone Number</label>
+            <input type="tel" id="phone" required>
+
+            <label for="cnic">CNIC#</label>
+            <input type="text" id="cnic" maxlength="15" required>
+
+            
+        </div>
+
+        <!-- Step 2: Education -->
+       
+        <div class="form-step step-2">
+
+            <h3>Education</h3>
+            
+            <label for="degree">Degree</label>
+            <input type="text" id="degree" required>
+
+            <label for="university">University</label>
+            <input type="text" id="university" required>
+
+            <label for="graduation">Year of Graduation</label>
+            <input type="text" id="graduation" required>
+        </div>
+
+        <!-- Step 3: Experience -->
+        <div class="form-step step-3">
+
+            <h3>Experience</h3>
+            
+            <label for="jobTitle">Job Title</label>
+            <input type="text" id="jobTitle" required>
+
+            <label for="company">Company Name</label>
+            <input type="text" id="company" required>
+
+            <label for="years">Years of Experience</label>
+            <input type="text" id="years" required>
+        </div>
+
+        <div class="buttons">
+            <button type="button" id="prevBtn" disabled>Previous</button>
+            <button type="button" id="nextBtn">Next</button>
+        </div>
+    </form>
+    <div class="message" id="message">
+        <h2>Your Application is Submitted</h2>
+        <p>Thank You</p>
+    </div>
+</div>
+
+
+<script>
+    const steps = document.querySelectorAll('.form-step');
+    const progressSteps = document.querySelectorAll('.progress-bar .step');
+    const nextBtn = document.getElementById('nextBtn');
+    const prevBtn = document.getElementById('prevBtn');
+    const progressBar = document.querySelector('.progress-bar');
+    const formHeading = document.getElementById('formHeading');
+    let currentStep = 0;
+
+    nextBtn.addEventListener('click', () => {
+        const inputs = steps[currentStep].querySelectorAll('input');
+        let allValid = true;
+
+        // Check if all inputs in the current step are valid
+        inputs.forEach(input => {
+            if (!input.checkValidity()) {
+                allValid = false;
+                input.reportValidity();  // This will show the validation message if the input is invalid
+            }
+        });
+
+        if (allValid) {
+            if (currentStep < steps.length - 1) {
+                steps[currentStep].classList.remove('active');
+                progressSteps[currentStep].classList.remove('active');
+                currentStep++;
+                steps[currentStep].classList.add('active');
+                progressSteps[currentStep].classList.add('active');
+
+                prevBtn.disabled = false;
+                if (currentStep === steps.length - 1) {
+                    nextBtn.textContent = 'Submit';
+                } else {
+                    nextBtn.textContent = 'Next';
+                }
+            } else {
+                submitForm();
+            }
+        }
+    });
+
+    prevBtn.addEventListener('click', () => {
+        if (currentStep > 0) {
+            steps[currentStep].classList.remove('active');
+            progressSteps[currentStep].classList.remove('active');
+            currentStep--;
+            steps[currentStep].classList.add('active');
+            progressSteps[currentStep].classList.add('active');
+
+            nextBtn.textContent = 'Next';
+            if (currentStep === 0) {
+                prevBtn.disabled = true;
+            }
+        }
+    });
+
+    function submitForm() {
+        document.getElementById('multiStepForm').style.display = 'none';
+        progressBar.style.display = 'none';
+        formHeading.style.display = 'none';
+        document.getElementById('message').style.display = 'block';
+    };
+
+</script>
+
+</body>
+</html>
